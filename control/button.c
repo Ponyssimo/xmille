@@ -4,6 +4,7 @@
 
 # include	<X11/Xlib.h>
 # include	<X11/Xutil.h>
+# include	<X11/Xresource.h>
 # include	"control.h"
 # include	"../mille.h"
 
@@ -102,6 +103,31 @@ int		borderwidth;
 	return b->button;
 }
 
+void buttonText (w, b, gc)
+Window	w;
+struct button	*b;
+GC	gc;
+{
+	XDrawImageString (dpy, w, gc, b->x, b->y, b->text, strlen (b->text));
+}
+
+void buttonOn (w, b)
+Window	w;
+struct button	*b;
+{
+	XFillPolygon (dpy, w, b->gc, b->points, b->npoints, Complex, CoordModeOrigin);
+	buttonText (w, b, b->gc);
+}
+	
+void buttonOff (w, b)
+Window	w;
+struct button	*b;
+{
+	XClearArea (dpy, w, 0, 0, b->width, b->height, False);
+	XDrawLines (dpy, w, b->gc, b->points, b->npoints, CoordModeOrigin);
+	buttonText (w, b, b->gc);
+}
+
 Window
 CmapButton (parent, x, y, button, notify)
 Window	parent;
@@ -133,7 +159,7 @@ int	(*notify)();
 	return w;
 }
 
-CunmapButton (w)
+int CunmapButton (w)
 Window	w;
 {
 	struct button	*b;
@@ -147,7 +173,7 @@ Window	w;
 	return 1;
 }
 
-CmanageButton (rep)
+int CmanageButton (rep)
 XAnyEvent	*rep;
 {
 	struct perwindow	*p;
@@ -193,7 +219,7 @@ XAnyEvent	*rep;
 	}
 }
 
-CredrawButton (w)
+int CredrawButton (w)
 Window		w;
 {
 	struct perwindow	*p;
@@ -203,29 +229,4 @@ Window		w;
 		return 0;
 	b = p->b;
 	buttonOff (w, b, p);
-}
-
-buttonOn (w, b)
-Window	w;
-struct button	*b;
-{
-	XFillPolygon (dpy, w, b->gc, b->points, b->npoints, Complex, CoordModeOrigin);
-	buttonText (w, b, b->gc);
-}
-	
-buttonOff (w, b)
-Window	w;
-struct button	*b;
-{
-	XClearArea (dpy, w, 0, 0, b->width, b->height, False);
-	XDrawLines (dpy, w, b->gc, b->points, b->npoints, CoordModeOrigin);
-	buttonText (w, b, b->gc);
-}
-
-buttonText (w, b, gc)
-Window	w;
-struct button	*b;
-GC	gc;
-{
-	XDrawImageString (dpy, w, gc, b->x, b->y, b->text, strlen (b->text));
 }
