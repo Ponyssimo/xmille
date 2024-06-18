@@ -1,0 +1,43 @@
+Mille Bornes is a French card game where the players are in a road race. Each race or hand is usually 700 miles long, but the first player to complete that distance exactly has the option to declare an extension in which case the race becomes 1,000 miles. Mille Bornes is played with a special deck of cards. There are hazard, remedy, safety, and distance cards. Each hazard is corrected by a corresponding remedy, and is actually prevented from happening in the first place by a corresponding safety. The target distance is reached by playing distance cards.
+
+Notes on porting xmille:
+
+	The bitmaps in 'cards' are set up for a color display, they probably
+will not be readable in monocrome without a bit of editing.  Also, the
+card display routines insist on color, so those will need fixing as well.
+
+	The major porting headache of mille is roll.c.  You'll probably
+have to fix it for your machine, it's terrible now -- but that's what came
+with it and it works on *my* machine...
+
+	I'll cheerfully accept bug reports in xmille, and may even be
+willing to maintain a current version; but I wash my hands of this mess by
+putting it into the public domain, I don't care what you do with it.
+
+	May 28, 1987
+
+	keith packard
+
+	keithp@copper.tek.com	(at least for now)
+
+	reed!dinadan!keith	(at home)
+
+
+++++++++++++++++++++++++++++
+xmille compiles nicely on my Sparc LX running Solaris 2.5.  You have to 
+cd to the  "cards" and "control" directories and run "make" there,
+though.  But it will work, I'm happy to point out!  BTW, I use gcc to
+compile.
+
+I haven't cleaned up the mess at all;  matter of fact, I've contributed
+to it I'm sure.  I threw in some code for enabling the keyboard to work.
+I am going to leave the Makefile's there just the way they are on my machine.
+If you find you need to rerun imake, you may have to tinker with the
+Makefile's to get it to compile- I did.  But it shouldn't be too hard.
+-Mike 3/28/96
+ schwager@wwa.com
+
+
+P.S.  TO get it to run in "Debug" mode, simply rename the executable as
+"a.out" and run a.out.  It checks $0, and prints various junk along the
+way.

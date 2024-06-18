@@ -1,0 +1,57 @@
+.TH XMILLE 6 "April 1992" "X Version 11"
+.SH NAME
+xmille \- X window mille bourne game
+.SH SYNOPSIS
+.B xmille
+.RI [ restore-file ]
+.SH DESCRIPTION
+.I Xmille
+brings up a window for a mille bournes game.
+When selecting one of your cards, the left button plays the card,
+the right button discards the card and the middle button chooses
+whichever is appropriate, first trying to play the card, and then
+discarding it.
+.br
+For those who don't know, the point behind
+.I mille bournes
+is to get to 700 miles before your opponent.  You can opt for an extension,
+and for extra points go the full 1000 (mille) miles (bournes).  You must
+get exactly the correct number of miles.
+.br
+You can try
+and stop your opponent with various "battle" cards.  It will try and stop
+you.  You can counter the "battle" cards with the appropriate gasoline,
+repair, Go, or spare tire card.  Or you may have a "Safety", with will
+make it impossible for your opponent to hurt you in some fashion.  It's
+a good idea to keep your Safety's in your hand (unless your opponent
+gets close to the end).  If your opponent, say, hands you an "out of gas"
+card and you have the Tanker truck card, you play it immediately and
+cry out, "Coup Fourre'!!"
+(pronounced, "KOO four RAY")  You get bonus points for that.  For
+full game rules, see the Parker Brothers card game by the same name.
+.br
+There are now keyboard equivalents for some of the actions:
+.nf
+p  - Pick a card
+u# - use card number "#"  (1-6)
+up - use picked card
+d# - discard card number "#" (1-6)
+dp - discard picked card
+Q  - absolute Quit, doesn't check with you before doing so.
+s  - save game
+.SH AUTHOR
+Keith Packard
+.br
+Dave Lemke
+.br
+Dana Chee
+.br
+Keyboard stuff and minor mods by: Mike Schwager (schwager@wwa.com)
+.SH "SEE ALSO"
+.SH BUGS
+It does not accept any X arguments, including the -display argument.  The
+DISPLAY environment variable must be set for it to work
+.br
+Sometimes it crashes if you win :-(.  I need to look into it further.
+If you can reproduce it on a regular basis, or if you can figure it out, 
+that would be great! -Mike, 3/28/96
