@@ -120,7 +120,13 @@ void Prompt (
 	char *string
 );
 
-// debug (pos, string, a0, a1, a2)
+void debug (
+	int pos,
+	char *string,
+	int a0,
+	char * a1
+//	int a2
+);
 
 void ComputerStatus (
 	char *string
