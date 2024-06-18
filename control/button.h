@@ -1,12 +1,6 @@
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
-# include	<X11/Xlib.h>
-# include	<X11/Xutil.h>
-# include	<X11/Xresource.h>
-# include	"control.h"
-# include	"../mille.h"
-
 struct button;
 
 Button CcreateButton (
