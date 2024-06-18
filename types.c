@@ -4,13 +4,13 @@
  * @(#)types.c	1.1 (Berkeley) 4/1/82
  */
 
-isrepair(card)
+CARD isrepair(card)
 reg CARD	card; {
 
 	return card == C_GAS || card == C_SPARE || card == C_REPAIRS || card == C_INIT;
 }
 
-safety(card)
+CARD safety(card)
 reg CARD	card; {
 
 	switch (card) {
