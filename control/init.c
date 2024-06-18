@@ -7,6 +7,7 @@
 # include	<assert.h>
 # include	"co_class.h"
 # include	<stdio.h>
+# include	"button.h"
 #define DEFAULT_FONT "fixed"
 #define DEFAULT_FONTB "fixed"
 
@@ -19,7 +20,7 @@ int		co_inited;
 GC		co_fore_gc, co_back_gc;
 extern Display	*dpy;
 
-co_init ()
+int co_init ()
 {
 	XColor	hard_def, exact_def;
 	int	screen;
