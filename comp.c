@@ -1,4 +1,8 @@
 # include	"mille.h"
+# include	"types.h"
+# include	"roll.h"
+# include	"misc.h"
+# include	"ui.h"
 
 /*
  * @(#)comp.c	1.1 (Berkeley) 4/1/82
@@ -7,7 +11,82 @@
 # define	V_VALUABLE	40
 extern CARD Opposite[];
 
-calcmove() {
+int onecard(pp)
+reg PLAY	*pp; {
+
+	reg CARD	bat, spd, card;
+
+	bat = pp->battle;
+	spd = pp->speed;
+	card = -1;
+	if (pp->can_go || ((isrepair(bat) || bat == C_STOP
+	    || spd == C_LIMIT) && Numseen[S_RIGHT_WAY] != 0)
+	    || Numseen[safety(bat)] != 0)
+		switch (End - pp->mileage) {
+		  case 200:
+			if (pp->nummiles[C_200] == 2)
+				return FALSE;
+			card = C_200;
+		  case 100:
+		  case 75:
+			if (card == -1)
+				card = (End - pp->mileage == 75 ? C_75 : C_100);
+			if (spd == C_LIMIT)
+				return Numseen[S_RIGHT_WAY] == 0;
+		  case 50:
+		  case 25:
+			if (card == -1)
+				card = (End - pp->mileage == 25 ? C_25 : C_50);
+			return Numseen[card] != Numcards[card];
+		}
+	return FALSE;
+}
+
+int canplay(pp, op, card)
+reg PLAY	*pp, *op;
+reg CARD	card; {
+
+	switch (card) {
+	  case C_200:
+		if (pp->nummiles[C_200] == 2)
+			break;
+	  case C_75:	case C_100:
+		if (pp->speed == C_LIMIT)
+			break;
+	  case C_50:
+		if (pp->mileage + Value[card] > End)
+			break;
+	  case C_25:
+		if (pp->can_go)
+			return TRUE;
+		break;
+	  case C_EMPTY:	case C_FLAT:	case C_CRASH:
+	  case C_STOP:
+		if (op->can_go && op->safety[safety(card) - S_CONV] != S_PLAYED)
+			return TRUE;
+		break;
+	  case C_LIMIT:
+		if (op->speed != C_LIMIT && op->safety[S_RIGHT_WAY] != S_PLAYED
+		    && op->mileage + 50 < End)
+			return TRUE;
+		break;
+	  case C_GAS:	case C_SPARE:	case C_REPAIRS:
+		if (pp->battle == Opposite[card])
+			return TRUE;
+		break;
+	  case C_GO:
+		if (!pp->can_go
+		    && (isrepair(pp->battle) || pp->battle == C_STOP))
+			return TRUE;
+		break;
+	  case C_END_LIMIT:
+		if (pp->speed == C_LIMIT)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+void calcmove() {
 
 	reg CARD	card;
 	reg int		*value;
@@ -317,79 +396,4 @@ normbad:
 		}
 	}
 	ComputerCard (pp->hand[Card_no]);
-}
-
-onecard(pp)
-reg PLAY	*pp; {
-
-	reg CARD	bat, spd, card;
-
-	bat = pp->battle;
-	spd = pp->speed;
-	card = -1;
-	if (pp->can_go || ((isrepair(bat) || bat == C_STOP
-	    || spd == C_LIMIT) && Numseen[S_RIGHT_WAY] != 0)
-	    || Numseen[safety(bat)] != 0)
-		switch (End - pp->mileage) {
-		  case 200:
-			if (pp->nummiles[C_200] == 2)
-				return FALSE;
-			card = C_200;
-		  case 100:
-		  case 75:
-			if (card == -1)
-				card = (End - pp->mileage == 75 ? C_75 : C_100);
-			if (spd == C_LIMIT)
-				return Numseen[S_RIGHT_WAY] == 0;
-		  case 50:
-		  case 25:
-			if (card == -1)
-				card = (End - pp->mileage == 25 ? C_25 : C_50);
-			return Numseen[card] != Numcards[card];
-		}
-	return FALSE;
-}
-
-canplay(pp, op, card)
-reg PLAY	*pp, *op;
-reg CARD	card; {
-
-	switch (card) {
-	  case C_200:
-		if (pp->nummiles[C_200] == 2)
-			break;
-	  case C_75:	case C_100:
-		if (pp->speed == C_LIMIT)
-			break;
-	  case C_50:
-		if (pp->mileage + Value[card] > End)
-			break;
-	  case C_25:
-		if (pp->can_go)
-			return TRUE;
-		break;
-	  case C_EMPTY:	case C_FLAT:	case C_CRASH:
-	  case C_STOP:
-		if (op->can_go && op->safety[safety(card) - S_CONV] != S_PLAYED)
-			return TRUE;
-		break;
-	  case C_LIMIT:
-		if (op->speed != C_LIMIT && op->safety[S_RIGHT_WAY] != S_PLAYED
-		    && op->mileage + 50 < End)
-			return TRUE;
-		break;
-	  case C_GAS:	case C_SPARE:	case C_REPAIRS:
-		if (pp->battle == Opposite[card])
-			return TRUE;
-		break;
-	  case C_GO:
-		if (!pp->can_go
-		    && (isrepair(pp->battle) || pp->battle == C_STOP))
-			return TRUE;
-		break;
-	  case C_END_LIMIT:
-		if (pp->speed == C_LIMIT)
-			return TRUE;
-	}
-	return FALSE;
 }
