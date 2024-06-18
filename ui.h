@@ -1,3 +1,6 @@
+#ifndef UI_H_
+#define UI_H_
+
 # include	"color.h"
 # include	<X11/Xlib.h>
 # include	"control/control.h"
@@ -103,3 +106,194 @@ extern struct safety_offset	safety_offsets[4];
 
 # define WINDOW_WIDTH	(HUM_SAFE_X + (WIDTH + PAD_CARD) * 2)
 # define WINDOW_HEIGHT	(HUM_HAND_Y + HEIGHT + PAD_CARD)
+
+void Message (
+	char *string
+);
+
+void Error (
+	char *string,
+	void *arg
+);
+
+void Prompt (
+	char *string
+);
+
+// debug (pos, string, a0, a1, a2)
+
+void ComputerStatus (
+	char *string
+);
+
+void ComputerCard (
+	int	type
+);
+
+void ComputerDistance (
+	int distance
+);
+
+void EraseComputerDistance (
+);
+
+void RedisplayComputerDistance (
+);
+
+void ComputerSpeed (
+	int type
+);
+
+void ComputerBattle (
+	int type
+);
+
+void ComputerMiles (
+	int type,
+	int index,
+	int count
+);
+
+void EraseComputerMiles (
+);
+
+void ComputerSafety (
+	int type,
+	int index
+);
+
+void DisplayDiscard (
+	int type
+);
+
+void DisplayDeck (
+	int numberLeft
+);
+
+void HumanDistance (
+	int distance
+);
+
+void EraseHumanDistance (
+);
+
+void RedisplayHumanDistance (
+);
+
+void HumanSpeed (
+	int type
+);
+
+void HumanBattle (
+	int type
+);
+
+void HumanMiles (
+	int type,
+	int index,
+	int count
+);
+
+void EraseHumanMiles (
+);
+
+void HumanSafety (
+	int type,
+	int index
+);
+
+void HumanHand (
+	int	type,
+	int index
+);
+
+void displayDistance (
+	int x,
+	int y,
+	int value,
+	int width,
+	int height
+);
+
+void eraseDistance (
+	int x,
+	int y,
+	int value,
+	int width,
+	int height
+);
+
+char *GetpromptedInput (
+	char *string
+);
+
+void newboard(
+);
+
+void newscore(
+);
+
+void redraw_board (
+);
+
+void exposeBoard (
+	XExposeEvent *rep
+);
+
+void redraw_region (
+	int xpos,
+	int ypos,
+	int w,
+	int h
+);
+
+void init_ui (
+);
+
+void finish_ui (
+);
+
+void update_ui (
+);
+
+void Beep (
+);
+
+int getyn(
+	register char *prompt
+);
+
+void mouse_event (
+	XButtonEvent *rep;
+);
+
+void key_event (
+XKeyPressedEvent *rep;
+);
+
+void getmove(
+);
+
+void do_save (
+);
+
+void do_quit (
+);
+
+void prboard(
+);
+
+void InScore (
+	int	line,
+	int player,
+	char *text
+);
+
+void prscore(
+	register bool for_real
+);
+
+void FlushInput (
+);
+
+#endif
