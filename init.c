@@ -1,10 +1,12 @@
 # include	"mille.h"
+# include	"roll.h"
+# include	"move.h"
 
 /*
  * @(#)init.c	1.1 (Berkeley) 4/1/82
  */
 
-init() {
+void init() {
 
 	reg PLAY	*pp;
 	reg int		i, j;
@@ -48,7 +50,7 @@ init() {
 	End = 700;
 }
 
-shuffle() {
+void shuffle() {
 
 	reg int		i, r;
 	reg CARD	temp;
