@@ -1,4 +1,10 @@
+# include	<unistd.h>
 # include	"mille.h"
+# include	"init.h"
+# include	"ui.h"
+# include	"move.h"
+# include	"misc.h"
+# include	"save.h"
 
 /*
  * @(#)mille.c	1.3 (Berkeley) 5/10/83
@@ -18,7 +24,7 @@ void rub() {
 
 char	_sobuf[BUFSIZ];
 
-main(ac, av)
+void main(ac, av)
 reg int		ac;
 reg char	*av[]; {
 
@@ -128,7 +134,7 @@ reg char	*av[]; {
 /*
  *	Time to go beddy-by
  */
-die() {
+void die() {
 
 	signal(SIGINT, (void *)0);
 	if (outf)
