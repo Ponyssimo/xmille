@@ -1,10 +1,15 @@
 #include	"mille.h"
+#include	"ui.h"
+#include	"misc.h"
+#include	"types.h"
+#include	"comp.h"
+#include	"animate.h"
 
 /*
  * @(#)move.c	1.3 (Berkeley) 7/2/83
  */
 
-extern CARD Opposite[];
+extern CARD OppositeCard[];
 
 #ifdef CTRL
 #undef CTRL
@@ -21,7 +26,101 @@ char	*Movenames[] = {
 
 char	*playcard (), *sprint ();
 
-domove()
+/*
+ * return whether or not the player has picked
+ */
+bool haspicked(pp)
+reg PLAY	*pp; {
+
+	reg int	card;
+
+	if (Topcard <= Deck)
+		return TRUE;
+	switch (pp->hand[Card_no]) {
+	  case C_GAS_SAFE:	case C_SPARE_SAFE:
+	  case C_DRIVE_SAFE:	case C_RIGHT_WAY:
+		card = 1;
+		break;
+	  default:
+		card = 0;
+		break;
+	}
+	return (pp->hand[card] != C_INIT);
+}
+
+void account(card)
+reg CARD	card; {
+
+	reg CARD	oppos;
+
+	if (card == C_INIT)
+		return;
+	++Numseen[card];
+	if (Play == COMP)
+		switch (card) {
+		  case C_GAS_SAFE:
+		  case C_SPARE_SAFE:
+		  case C_DRIVE_SAFE:
+			oppos = OppositeCard[card];
+			Numgos += Numcards[oppos] - Numseen[oppos];
+			break;
+		  case C_CRASH:
+		  case C_FLAT:
+		  case C_EMPTY:
+		  case C_STOP:
+			Numgos++;
+			break;
+		}
+}
+
+void sort(hand)
+reg CARD	*hand;
+{
+	reg CARD	*cp, *tp;
+	reg CARD	temp;
+
+	cp = hand;
+	hand += HAND_SZ;
+	for ( ; cp < &hand[-1]; cp++)
+		for (tp = cp + 1; tp < hand; tp++)
+			if (*cp > *tp) {
+				temp = *cp;
+				*cp = *tp;
+				*tp = temp;
+			}
+}
+
+/*
+ *	Check and see if either side can go.  If they cannot,
+ * the game is over
+ */
+void check_go() {
+
+	reg CARD	card;
+	reg PLAY	*pp, *op;
+	reg int		i;
+
+	for (pp = Player; pp < &Player[2]; pp++) {
+		op = (pp == &Player[COMP] ? &Player[PLAYER] : &Player[COMP]);
+		for (i = 0; i < HAND_SZ; i++) {
+			card = pp->hand[i];
+			if (issafety(card) || canplay(pp, op, card)) {
+				if (Debug) {
+					fprintf(outf, "CHECK_GO: can play %s (%d), ", C_name[card], card);
+					fprintf(outf, "issafety(card) = %d, ", issafety(card));
+					fprintf(outf, "canplay(pp, op, card) = %d\n", canplay(pp, op, card));
+				}
+				return;
+			}
+			else if (Debug)
+				fprintf(outf, "CHECK_GO: cannot play %s\n",
+				    C_name[card]);
+		}
+	}
+	Finished = TRUE;
+}
+
+void domove()
 {
 	reg PLAY	*pp;
 	reg int		i, j;
@@ -142,36 +241,6 @@ acc:
 		nextplay();
 }
 
-/*
- *	Check and see if either side can go.  If they cannot,
- * the game is over
- */
-check_go() {
-
-	reg CARD	card;
-	reg PLAY	*pp, *op;
-	reg int		i;
-
-	for (pp = Player; pp < &Player[2]; pp++) {
-		op = (pp == &Player[COMP] ? &Player[PLAYER] : &Player[COMP]);
-		for (i = 0; i < HAND_SZ; i++) {
-			card = pp->hand[i];
-			if (issafety(card) || canplay(pp, op, card)) {
-				if (Debug) {
-					fprintf(outf, "CHECK_GO: can play %s (%d), ", C_name[card], card);
-					fprintf(outf, "issafety(card) = %d, ", issafety(card));
-					fprintf(outf, "canplay(pp, op, card) = %d\n", canplay(pp, op, card));
-				}
-				return;
-			}
-			else if (Debug)
-				fprintf(outf, "CHECK_GO: cannot play %s\n",
-				    C_name[card]);
-		}
-	}
-	Finished = TRUE;
-}
-
 char *
 playcard(pp)
 reg PLAY	*pp;
@@ -221,7 +290,7 @@ mustpick:
 		break;
 
 	  case C_GAS:	case C_SPARE:	case C_REPAIRS:
-		if (pp->battle != Opposite[card])
+		if (pp->battle != OppositeCard[card])
 			return sprint ("can't play \"%s\"", C_name[card]);
 #ifdef ANIMATE
 		animate_move (Play, ANIMATE_HAND, Card_no, ANIMATE_BATTLE, card);
@@ -285,7 +354,7 @@ protected:
 
 	  case C_GAS_SAFE:	case C_SPARE_SAFE:
 	  case C_DRIVE_SAFE:	case C_RIGHT_WAY:
-		if (pp->battle == Opposite[card]
+		if (pp->battle == OppositeCard[card]
 		    || (card == C_RIGHT_WAY && pp->speed == C_LIMIT)) {
 			if (!(card == C_RIGHT_WAY && !isrepair(pp->battle))) {
 				pp->battle = C_GO;
@@ -348,68 +417,4 @@ sprint (char *string, char *arg)
 
 	sprintf (spbuf, string, arg);
 	return spbuf;
-}
-
-/*
- * return whether or not the player has picked
- */
-haspicked(pp)
-reg PLAY	*pp; {
-
-	reg int	card;
-
-	if (Topcard <= Deck)
-		return TRUE;
-	switch (pp->hand[Card_no]) {
-	  case C_GAS_SAFE:	case C_SPARE_SAFE:
-	  case C_DRIVE_SAFE:	case C_RIGHT_WAY:
-		card = 1;
-		break;
-	  default:
-		card = 0;
-		break;
-	}
-	return (pp->hand[card] != C_INIT);
-}
-
-account(card)
-reg CARD	card; {
-
-	reg CARD	oppos;
-
-	if (card == C_INIT)
-		return;
-	++Numseen[card];
-	if (Play == COMP)
-		switch (card) {
-		  case C_GAS_SAFE:
-		  case C_SPARE_SAFE:
-		  case C_DRIVE_SAFE:
-			oppos = Opposite[card];
-			Numgos += Numcards[oppos] - Numseen[oppos];
-			break;
-		  case C_CRASH:
-		  case C_FLAT:
-		  case C_EMPTY:
-		  case C_STOP:
-			Numgos++;
-			break;
-		}
-}
-
-sort(hand)
-reg CARD	*hand;
-{
-	reg CARD	*cp, *tp;
-	reg CARD	temp;
-
-	cp = hand;
-	hand += HAND_SZ;
-	for ( ; cp < &hand[-1]; cp++)
-		for (tp = cp + 1; tp < hand; tp++)
-			if (*cp > *tp) {
-				temp = *cp;
-				*cp = *tp;
-				*tp = temp;
-			}
 }
