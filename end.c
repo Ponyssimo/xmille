@@ -1,4 +1,5 @@
 # include	"mille.h"
+# include	"ui.h"
 
 /*
  * @(#)end.c	1.1 (Berkeley) 4/1/82
@@ -8,7 +9,7 @@
  *	print out the score as if it was final, and add the totals for
  * the end-of-games points to the user who deserves it (if any).
  */
-finalscore(pp)
+void finalscore(pp)
 reg PLAY	*pp; {
 
 	reg int		tot, num;
