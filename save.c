@@ -1,15 +1,20 @@
+#include	<fcntl.h>
+#include	<unistd.h>
 #include	"mille.h"
+#include	"ui.h"
+#include	"misc.h"
+#include	"varpush.h"
 
 /*
  * @(#)save.c	1.4 (Berkeley) 7/3/83
  */
 
 typedef	struct stat	Stat;
-typedef	struct tm	Time;
+//typedef	struct tm	Time;
 
 char	*ctime();
 
-int	read(), write();
+ssize_t read(), write();
 
 extern char *GetpromptedInput(char *);
 /*
@@ -18,7 +23,7 @@ extern char *GetpromptedInput(char *);
 // extern int	errno;
 // extern char	*sys_errlist[];
 
-save() {
+bool save() {
 
 	reg char	*sp;
 	reg int		outf;
@@ -43,7 +48,7 @@ save() {
 		return FALSE;
 
 	if ((outf = creat(buf, 0644)) < 0) {
-		error(sys_errlist[errno]);
+		error(strerror(errno));
 		return FALSE;
 	}
 	Error (buf);
@@ -62,7 +67,7 @@ save() {
  * backup was made on exiting, in which case certain things must
  * be cleaned up before the game starts.
  */
-rest_f(file)
+bool rest_f(file)
 reg char	*file; {
 
 	reg char	*sp;
