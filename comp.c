@@ -9,7 +9,8 @@
  */
 
 # define	V_VALUABLE	40
-extern CARD Opposite[];
+
+extern CARD OppositeCard[];
 
 int onecard(pp)
 reg PLAY	*pp; {
@@ -71,7 +72,7 @@ reg CARD	card; {
 			return TRUE;
 		break;
 	  case C_GAS:	case C_SPARE:	case C_REPAIRS:
-		if (pp->battle == Opposite[card])
+		if (pp->battle == OppositeCard[card])
 			return TRUE;
 		break;
 	  case C_GO:
@@ -135,7 +136,7 @@ norm:
 			break;
 		  case C_GAS_SAFE:	case C_DRIVE_SAFE:
 		  case C_SPARE_SAFE:	case C_RIGHT_WAY:
-			if (pp->battle == Opposite[card]
+			if (pp->battle == OppositeCard[card]
 			   || (pp->speed == C_LIMIT && card == C_RIGHT_WAY)) {
 				Movetype = M_PLAY;
 				Card_no = i;
@@ -165,7 +166,7 @@ playsafe:
 				Card_no = i;
 				return;
 			}
-			oppos = Opposite[pp->hand[i]];
+			oppos = OppositeCard[pp->hand[i]];
 			if (Numseen[oppos] == Numcards[oppos])
 				goto playsafe;
 			else if (!cango
@@ -183,7 +184,7 @@ playsafe:
 		}
 	}
 	if (!pp->can_go && !isrepair(pp->battle))
-		Numneed[Opposite[pp->battle]]++;
+		Numneed[OppositeCard[pp->battle]]++;
 redoit:
 	foundlow = (cango || count[C_END_LIMIT] != 0
 			  || Numseen[C_LIMIT] == Numcards[C_LIMIT]
@@ -265,7 +266,7 @@ miles:
 				break;
 			  case C_REPAIRS:	case C_SPARE:	case C_GAS:
 				safe = safety(card) - S_CONV;
-				oppos = Opposite[card];
+				oppos = OppositeCard[card];
 				if (pp->safety[safe] != S_UNKNOWN)
 					*value = (pp->safety[safe] == S_PLAYED ? -1 : 1);
 				else if (pp->battle != oppos
@@ -313,7 +314,7 @@ repair:
 				break;
 			  case C_CRASH:	case C_EMPTY:	case C_FLAT:
 				safe = safety(card) - S_CONV;
-				oppos = Opposite[card];
+				oppos = OppositeCard[card];
 				*value = (pp->safety[safe]!=S_UNKNOWN ? 3 : 4);
 normbad:
 				if (op->safety[safe] == S_PLAYED)
@@ -376,7 +377,7 @@ normbad:
 		value++;
 	}
 	if (!pp->can_go && !isrepair(pp->battle))
-		Numneed[Opposite[pp->battle]]++;
+		Numneed[OppositeCard[pp->battle]]++;
 	if (cango) {
 		ComputerStatus ("PLAY");
 		if (Debug)
