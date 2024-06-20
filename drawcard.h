@@ -1,6 +1,8 @@
 #ifndef DRAWCARD_H_
 #define DRAWCARD_H_
 
+struct displayed;
+
 void bw_init_cards();
 
 void init_cards ();
