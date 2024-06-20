@@ -1,18 +1,19 @@
+# include	<stdio.h>
 # include	"mille.h"
 
 /*
  * @(#)varpush.c	1.1 (Berkeley) 4/1/82
  */
 
-int	read(), write();
+ssize_t	read(), write();
 
 /*
  *	push variables around via the routine func() on the file
  * channel file.  func() is either read or write.
  */
-varpush(file, func)
+void varpush(file, func)
 reg int	file;
-reg int	(*func)(); {
+reg ssize_t	(*func)(); {
 
 	int	temp;
 
@@ -36,7 +37,7 @@ reg int	(*func)(); {
 			char	buf[80];
 over:
 			printf("Debug file:");
-			gets(buf);
+			fgets(buf, 80, stdin);
 			if ((outf = fopen(buf, "w")) == NULL) {
 				perror(buf);
 				goto over;
