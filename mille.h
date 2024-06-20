@@ -175,4 +175,6 @@ extern PLAY	Player[2];
 
 CARD	getcard();
 
+void rub();
+
 void die();
