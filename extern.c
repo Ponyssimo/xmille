@@ -71,7 +71,7 @@ int	Card_no,		/* Card number for current move		*/
 
 CARD	Discard,		/* Top of discard pile			*/
 	*Topcard,		/* Pointer to next card to be picked	*/
-	Opposite[NUM_CARDS] = {	/* Opposites of each card		*/
+	OppositeCard[NUM_CARDS] = {	/* Opposites of each card		*/
 		C_25, C_50, C_75, C_100, C_200, C_GAS, C_SPARE,
 		C_REPAIRS, C_GO, C_END_LIMIT, C_EMPTY, C_FLAT, C_CRASH,
 		C_STOP, C_LIMIT, C_EMPTY, C_FLAT, C_CRASH, C_STOP, C_INIT
