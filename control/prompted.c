@@ -5,11 +5,15 @@
  */
 
 # include	<X11/Xlib.h>
+# include	<X11/Xutil.h>
 # include	"control.h"
 # include	"co_class.h"
 # include	<sys/time.h>
 # include	<assert.h>
 # include	<string.h>
+# include	"init.h"
+# include	"button.h"
+# include	"dispatch.h"
 
 /*
  *	prompted window on screen
@@ -103,7 +107,13 @@ Window	parent;
 	return returnbuffer;
 }
 
-co_promptedEvent (rep)
+void predisplayLabel ()
+{
+	XDrawImageString (dpy, prompted, co_fore_gc, label_x, LABEL_Y, label, strlen (label));
+	XFlush (dpy);
+}
+
+int co_promptedEvent (rep)
 XAnyEvent	*rep;
 {
 	switch (rep->type) {
@@ -112,39 +122,33 @@ XAnyEvent	*rep;
 	}
 }
 
-pco_OKstate (n)
+void draw_string (string, on)
+char	*string;
+int		on;
+{
+	GC	my;
+
+	my = on ? co_fore_gc : co_back_gc;
+	XDrawImageString (dpy, textbox, my, 0, TEXTBOX_VP, string, strlen(string));
+}
+
+void redisplayText ()
+{
+	draw_string (returnbuffer, 1);
+}
+
+int pco_OKstate (int n)
 {
 	prompted_done = 1;
 }
 
-predisplayLabel ()
+int compute_width (string)
+char	*string;
 {
-	XDrawImageString (dpy, prompted, co_fore_gc, label_x, LABEL_Y, label, strlen (label));
-	XFlush (dpy);
+	return XTextWidth (co_font, string, strlen(string));
 }
 
-textbox_event (rep)
-XAnyEvent	*rep;
-{
-	char	buffer[20], *pbuf;
-	int	count ;
-
-	pbuf = buffer;
-	switch (rep->type) {
-	case Expose:
-		redisplayText ();
-		break;
-	case KeyPress:
-		count = XLookupString (rep, pbuf, 20, 0, 0);
-		
-		while (!prompted_done && count--) {
-			handle_char (*pbuf++);
-		}
-		break;
-	}
-}
-
-draw_char (int pos, char ch, int on)
+int draw_char (int pos, char ch, int on)
 {
 	GC	my;
 
@@ -152,7 +156,7 @@ draw_char (int pos, char ch, int on)
 	XDrawImageString (dpy, textbox, my, pos, TEXTBOX_VP, &ch, 1);
 }
 
-handle_char (c)
+void handle_char (char c)
 {
 	switch (c) {
 	case '\n':
@@ -183,23 +187,23 @@ handle_char (c)
 	}
 }
 
-compute_width (string)
-char	*string;
+int textbox_event (rep)
+XAnyEvent	*rep;
 {
-	return XTextWidth (co_font, string, strlen(string));
-}
+	char	buffer[20], *pbuf;
+	int		count;
 
-
-draw_string (string, on)
-char	*string;
-{
-	GC	my;
-
-	my = on ? co_fore_gc : co_back_gc;
-	XDrawImageString (dpy, textbox, my, 0, TEXTBOX_VP, string, strlen(string));
-}
-
-redisplayText ()
-{
-	draw_string (returnbuffer, 1);
+	pbuf = buffer;
+	switch (rep->type) {
+	case Expose:
+		redisplayText ();
+		break;
+	case KeyPress:
+		count = XLookupString ((XKeyEvent*) rep, pbuf, 20, 0, 0);
+		
+		while (!prompted_done && count--) {
+			handle_char (*pbuf++);
+		}
+		break;
+	}
 }
