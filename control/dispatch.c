@@ -58,7 +58,13 @@ int	eventToMask[] = {
 struct eventGroup	*eventStack, *allocGroup();
 extern	Display		*dpy;
 
-bindEvent (window, eventMask, func)
+void freeGroup (g)
+struct eventGroup	*g;
+{
+	free ((char *) g);
+}
+
+void bindEvent (window, eventMask, func)
 Window		window;
 unsigned long	eventMask;
 int		(*func)();
@@ -79,7 +85,7 @@ int		(*func)();
 	XSelectInput (dpy, window, allEvents);
 }
 
-unbindEvent (window, eventMask)
+void unbindEvent (window, eventMask)
 Window		window;
 unsigned long	eventMask;
 {
@@ -110,7 +116,7 @@ unsigned long	eventMask;
 	XSelectInput (dpy, window, remainingEvents);
 }
 
-sendEvent (rep)
+void sendEvent (rep)
 XAnyEvent	*rep;
 {
 	struct eventGroup	*g;
@@ -125,7 +131,7 @@ XAnyEvent	*rep;
 	}
 }
 
-dispatch ()
+void dispatch ()
 {
 	XEvent	event;
 
@@ -139,10 +145,4 @@ allocGroup ()
 	// char	*malloc ();
 
 	return (struct eventGroup *) malloc (sizeof (struct eventGroup));
-}
-
-freeGroup (g)
-struct eventGroup	*g;
-{
-	free ((char *) g);
 }
