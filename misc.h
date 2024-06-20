@@ -3,7 +3,7 @@
 
 bool error(
     char *str,
-    void *arg
+    ...
 );
 
 bool check_ext(
