@@ -1,4 +1,7 @@
 #include	"mille.h"
+#include	"ui.h"
+#include	"comp.h"
+#include	"save.h"
 
 /*
  * @(#)misc.c	1.3 (Berkeley) 7/2/83
@@ -7,8 +10,9 @@
 #define	NUMSAFE	4
 
 /* VARARGS1 */
-error(str, arg)
+bool error(str, arg)
 char	*str;
+void	*arg;
 {
 	Error (str, arg);
 	Beep ();
@@ -16,7 +20,7 @@ char	*str;
 	return FALSE;
 }
 
-check_ext(forcomp)
+bool check_ext(forcomp)
 reg bool	forcomp; {
 
 
@@ -71,7 +75,7 @@ done:
  * came from a saved file, make sure that they don't want to restore
  * it.  Exit appropriately.
  */
-check_more() {
+void check_more() {
 
 	FlushInput ();
 
