@@ -45,7 +45,7 @@ int	Card_no,		/* Card number for current move		*/
 		1,	/* C_DRIVE_SAFE */
 		1,	/* C_RIGHT_WAY */
 		0	/* C_INIT */
-	};
+	},
 	Numneed[NUM_CARDS] = {	/* number of cards needed per hand	*/
 		0,	/* C_25 */
 		0,	/* C_50 */
