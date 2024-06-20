@@ -10,6 +10,9 @@
 # include	<sys/time.h>
 # include	<assert.h>
 # include	<string.h>
+# include	"init.h"
+# include	"button.h"
+# include	"dispatch.h"
 
 /*
  *	affirm window on screen
@@ -93,7 +96,14 @@ Window	parent;
 		return 1;
 }
 
-co_affirmEvent (rep)
+void redisplayLabel ()
+{
+	XDrawImageString (dpy, affirm, co_fore_gc, label_x, LABEL_Y,
+			  label, strlen (label));
+	XFlush (dpy);
+}
+
+int co_affirmEvent (rep)
 XEvent	*rep;
 {
 	switch (rep->type) {
@@ -102,19 +112,12 @@ XEvent	*rep;
 	}
 }
 
-aco_OKstate (n)
+int aco_OKstate (int n)
 {
 	OKstate = 1;
 }
 
-co_CANCELstate (n)
+int co_CANCELstate (int n)
 {
 	CANCELstate = 1;
-}
-
-redisplayLabel ()
-{
-	XDrawImageString (dpy, affirm, co_fore_gc, label_x, LABEL_Y,
-			  label, strlen (label));
-	XFlush (dpy);
 }
