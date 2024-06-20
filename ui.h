@@ -112,8 +112,7 @@ void Message (
 );
 
 void Error (
-	char *string,
-	void *arg
+	char *string
 );
 
 void Prompt (
