@@ -113,7 +113,7 @@ void Message (
 
 void Error (
 	char *string,
-	...
+	void *arg
 );
 
 void Prompt (
@@ -242,7 +242,7 @@ void newscore(
 void redraw_board (
 );
 
-void exposeBoard (
+int exposeBoard (
 	XExposeEvent *rep
 );
 
@@ -269,21 +269,21 @@ int getyn(
 	register char *prompt
 );
 
-void mouse_event (
+int mouse_event (
 	XButtonEvent *rep;
 );
 
-void key_event (
+int key_event (
 XKeyPressedEvent *rep;
 );
 
 void getmove(
 );
 
-void do_save (
+int do_save (
 );
 
-void do_quit (
+int do_quit (
 );
 
 void prboard(

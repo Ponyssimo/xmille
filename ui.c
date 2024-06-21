@@ -7,6 +7,13 @@
 # include	"mille.h"
 # include	"ui.h"
 # include	<X11/Xutil.h>
+# include	"end.h"
+# include	"save.h"
+# include	"drawcard.h"
+# include	"control/init.h"
+# include	"control/affirm.h"
+# include	"control/button.h"
+# include	"control/dispatch.h"
 
 #ifdef CTRL
 # undef CTRL
@@ -76,6 +83,7 @@ static char	pbuf[512];
 char *
 prune (orig, max)
 char	*orig;
+int		max;
 {
 	int		len;
 
@@ -91,7 +99,7 @@ char	*orig;
 	return pbuf;
 }
 
-Message (string)
+void Message (string)
 char	*string;
 {
 	string = prune (string, MESS_W);
@@ -100,8 +108,9 @@ char	*string;
 			  string, strlen(string));
 }
 
-Error (string, arg)
+void Error (string, arg)
 char *string;
+void *arg;
 {
 	char	buf[512];
 	char	*o;
@@ -113,7 +122,7 @@ char *string;
 			  o, strlen(o));
 }
 
-Prompt (string)
+void Prompt (string)
 char *string;
 {
 	string = prune (string, PROMPT_W);
@@ -123,11 +132,16 @@ char *string;
 			  string, strlen(string));
 }
 
-debug (pos, string, a0, a1, a2)
+void debug (pos, string, a0, a1)
+int		pos;
+char	*string;
+int		a0;
+char	*a1;
+//int		a2;
 {
 }
 
-ComputerStatus (char *string)
+void ComputerStatus (char *string)
 {
 
 	char	buffer[512];
@@ -141,7 +155,7 @@ ComputerStatus (char *string)
 
 }
 
-ComputerCard (type)
+void ComputerCard (type)
 int	type;
 {
 	/*	displayCard (type, COMP_CARD_X, COMP_CARD_Y);*/
@@ -149,35 +163,35 @@ int	type;
 
 static int	computer_distance = 0;
 
-ComputerDistance (distance)
+void ComputerDistance (int distance)
 {
 	displayDistance (COMP_DIST_X, COMP_DIST_Y, distance, DIST_WIDTH, DIST_HEIGHT);
 	computer_distance = distance;
 }
 
-EraseComputerDistance ()
+void EraseComputerDistance ()
 {
 	computer_distance = 0;
 }
 
-RedisplayComputerDistance ()
+void RedisplayComputerDistance ()
 {
 	displayDistance (COMP_DIST_X, COMP_DIST_Y, computer_distance, DIST_WIDTH, DIST_HEIGHT);
 }
 
-ComputerSpeed (type)
+void ComputerSpeed (int type)
 {
 	displayCard (type, COMP_PLAY_X, COMP_PLAY_Y);
 }
 
-ComputerBattle (type)
+void ComputerBattle (int type)
 {
 	displayCard (type, COMP_PLAY_X + WIDTH + PAD_CARD, COMP_PLAY_Y);
 }
 
 static int computer_miles_count[5];
 
-ComputerMiles (type, index, count)
+void ComputerMiles (int type, int index, int count)
 {
 	while (computer_miles_count[index] < count) {
 		displayCard (type, COMP_PLAY_X + (WIDTH + PAD_CARD) * (index + 2),
@@ -186,7 +200,7 @@ ComputerMiles (type, index, count)
 	}
 }
 
-EraseComputerMiles ()
+void EraseComputerMiles ()
 {
 	int	i;
 
@@ -194,18 +208,18 @@ EraseComputerMiles ()
 		computer_miles_count[i] = 0;
 }
 
-ComputerSafety (type, index)
+void ComputerSafety (int type, int index)
 {
 	displayCard (type, COMP_SAFE_X + safety_offsets[index].x,
 	    COMP_SAFE_Y + safety_offsets[index].y);
 }
 
-DisplayDiscard (type)
+void DisplayDiscard (int type)
 {
 	displayCard (type, DISCARD_X, DISCARD_Y);
 }
 
-DisplayDeck (numberLeft)
+void DisplayDeck (int numberLeft)
 {
 	char	buffer[512];
 
@@ -216,35 +230,35 @@ DisplayDeck (numberLeft)
 
 static int human_distance = 0;
 
-HumanDistance (distance)
+void HumanDistance (int distance)
 {
 	displayDistance (HUM_DIST_X, HUM_DIST_Y, distance, DIST_WIDTH, DIST_HEIGHT);
 	human_distance = distance;
 }
 
-EraseHumanDistance ()
+void EraseHumanDistance ()
 {
 	human_distance = 0;
 }
 
-RedisplayHumanDistance ()
+void RedisplayHumanDistance ()
 {
 	displayDistance (HUM_DIST_X, HUM_DIST_Y, human_distance, DIST_WIDTH, DIST_HEIGHT);
 }
 
-HumanSpeed (type)
+void HumanSpeed (int type)
 {
 	displayCard (type, HUM_PLAY_X, HUM_PLAY_Y);
 }
 
-HumanBattle (type)
+void HumanBattle (int type)
 {
 	displayCard (type, HUM_PLAY_X + WIDTH + PAD_CARD, HUM_PLAY_Y);
 }
 
 static int human_miles_count[5];
 
-HumanMiles (type, index, count)
+void HumanMiles (int type, int index, int count)
 {
 	while (human_miles_count[index] < count) {
 		displayCard (type, HUM_PLAY_X + (WIDTH + PAD_CARD) * (index + 2),
@@ -253,7 +267,7 @@ HumanMiles (type, index, count)
 	}
 }
 
-EraseHumanMiles ()
+void EraseHumanMiles ()
 {
 	int	i;
 
@@ -261,25 +275,25 @@ EraseHumanMiles ()
 		human_miles_count[i] = 0;
 }
 
-HumanSafety (type, index)
+void HumanSafety (int type, int index)
 {
 	displayCard (type, HUM_SAFE_X + safety_offsets[index].x,
 	    HUM_SAFE_Y + safety_offsets[index].y);
 }
 
-HumanHand (type, index)
+void HumanHand (type, index)
 int	type, index;
 {
 	displayCard (type, HUM_HAND_X + (WIDTH + PAD_CARD) * index, HUM_HAND_Y);
 }
 
-displayDistance (x, y, value, width, height)
+void displayDistance (int x, int y, int value, int width, int height)
 {
 	XFillRectangle (dpy, xwindow, blue_gc, x, y, (value * width) / 1000,
 			height);
 }
 
-eraseDistance (x, y, value, width, height)
+void eraseDistance (int x, int y, int value, int width, int height)
 {
 	XClearArea (dpy, xwindow, x, y, (value * width) / 1000, height, TRUE);
 }
@@ -293,7 +307,7 @@ char	*string;
 	return co_prompted (string, xwindow);
 }
 
-newboard()
+void newboard()
 {
 	XClearWindow (dpy, xwindow);
 	cardEraseAll ();
@@ -305,7 +319,7 @@ newboard()
 	redraw_board ();
 }
 
-newscore()
+void newscore()
 {
 	InScore (-1, 0, "You");
 	InScore (-1, 1, "Computer");
@@ -323,12 +337,12 @@ newscore()
 	InScore (11, -1, "Games");
 }
 
-redraw_board ()
+void redraw_board ()
 {
 	redraw_region (0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
-exposeBoard (rep)
+int exposeBoard (rep)
 XExposeEvent	*rep;
 {
 	XRectangle	rect;
@@ -346,9 +360,10 @@ XExposeEvent	*rep;
 		redraw_region (rect.x, rect.y, rect.width, rect.height);
 		/*redraw_board();*/
 	}
+	return 0;
 }
 
-redraw_region (xpos, ypos, w, h)
+void redraw_region (int xpos, int ypos, int w, int h)
 {
 	int	x1, y1, x2, y2;
 	int	i;
@@ -394,7 +409,7 @@ redraw_region (xpos, ypos, w, h)
 	cardRedisplay (xpos, ypos, w, h);
 }
 
-init_ui ()
+void init_ui ()
 {
 	XColor	hardware_color, exact_color;
 	XClassHint	xch;
@@ -526,16 +541,16 @@ init_ui ()
 }
 
 
-finish_ui ()
+void finish_ui ()
 {
 }
 
-update_ui ()
+void update_ui ()
 {
 	XFlush (dpy);
 }
 
-Beep ()
+void Beep ()
 {
 	XBell (dpy, 0);
 }
@@ -545,7 +560,7 @@ Beep ()
  * also allowed.  Return TRUE if the answer was yes, FALSE if no.
  */
 
-getyn(prompt)
+int getyn(prompt)
 register char	*prompt;
 {
 	return co_affirm (prompt, xwindow);
@@ -555,7 +570,7 @@ static char	incharacter;
 
 static int	getmove_done;
 
-mouse_event (rep)
+int mouse_event (rep)
 XButtonEvent	*rep;
 {
 	int	x, y;
@@ -577,19 +592,19 @@ XButtonEvent	*rep;
 		}
 		Card_no = (x - HUM_HAND_X) / (WIDTH + PAD_CARD);
 		getmove_done = 1;
-		return;
+		return 0;
 	}
 	if (DECK_Y <= y && y <= DECK_Y + HEIGHT &&
 	    DECK_X <= x && x <= DECK_X + WIDTH) {
 		Movetype = M_DRAW;
 		ComputerStatus ("");
 		getmove_done = 1;
-		return;
+		return 0;
 	}
 	Beep ();
 }
 
-key_event (rep)
+int key_event (rep)
 XKeyPressedEvent	*rep;
 {
 	char buffer[20];
@@ -600,7 +615,7 @@ XKeyPressedEvent	*rep;
 	static int use;
 	static int discard;
 	charcount = XLookupString(rep, buffer, bufsize, &keysym, &compose);
-	if (! (isalnum (buffer[0]) || isspace (buffer[0]))) return;
+	if (! (isalnum (buffer[0]) || isspace (buffer[0]))) return 0;
 	if (Debug)
 	printf ("Got a KEYPRESS: %c, count: %d\n", buffer[0], charcount);
 	switch (buffer[0]) {
@@ -679,10 +694,10 @@ XKeyPressedEvent	*rep;
                         getmove_done = 0; break;
 		break;
 	}
-	return;
+	return 0;
 }
 
-getmove()
+void getmove()
 {
 
 	getmove_done = 0;
@@ -695,12 +710,12 @@ getmove()
 }
 
 
-do_save ()
+int do_save ()
 {
 	save ();
 }
 
-do_quit ()
+int do_quit ()
 {
 	rub();
 }
@@ -708,7 +723,7 @@ do_quit ()
 # define	COMP_STRT	20
 # define	CARD_STRT	2
 
-prboard() {
+void prboard() {
 
 	register PLAY	*pp;
 	register int		i, k;
@@ -749,7 +764,7 @@ prboard() {
 	DisplayDiscard (Discard);
 }
 
-InScore (line, player, text)
+void InScore (line, player, text)
 int	line, player;
 char	*text;
 {
@@ -761,7 +776,7 @@ char	*text;
 			  SCORE_Y + SCORE_H * (line + 1), text, strlen (text));
 }
 
-prscore(for_real)
+void prscore(for_real)
 register bool	for_real;
 {
 
@@ -800,6 +815,6 @@ register bool	for_real;
 	}
 }
 
-FlushInput ()
+void FlushInput ()
 {
 }
