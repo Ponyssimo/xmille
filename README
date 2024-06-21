@@ -41,3 +41,15 @@ Makefile's to get it to compile- I did.  But it shouldn't be too hard.
 P.S.  TO get it to run in "Debug" mode, simply rename the executable as
 "a.out" and run a.out.  It checks $0, and prints various junk along the
 way.
+
+
+++++++++++++++++++++++++++++
+I've updated xmille to build on my laptop, and it seems to work as well as
+I remember it working in the past on my dad'd FreeBSD machine. Overall I
+haven't done much aside from adding header files and defining variable types.
+There were a couple changes I had to make to work around features being
+deprecated over the decades and getting the compiler to not complain about
+mismatched types, but it hasn't seemed to break anything so far.
+
+-Jeffrey 6/21/2024
+jdcairtrain@gmail.com
