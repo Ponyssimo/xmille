@@ -65,7 +65,16 @@ struct card backside;
 struct card eraseCard;
 
 
-bw_init_cards()
+void drawIm (c, x, y)
+struct card	*c;
+int		x, y;
+{
+	XSetFunction(dpy, cheap_gc, GXcopy);
+	XCopyArea(dpy, c->bits, xwindow, cheap_gc, 0, 0, WIDTH, HEIGHT,
+		  x, y);
+}
+
+void bw_init_cards()
 {
 	int	i;
 	Pixmap	bits, mask;
@@ -137,7 +146,7 @@ bw_init_cards()
 	XFreePixmap(dpy, bits);
 	fprintf(stderr, ". done\n");
 }
-init_cards ()
+void init_cards ()
 {
 	int	i;
 	Pixmap	bits, mask, bits1, bits2;
@@ -238,16 +247,7 @@ init_cards ()
 	fprintf(stderr, ". done\n");
 }
 
-displayCard (card, x, y)
-int	card;
-int	x, y;
-{
-	if (card < 0 || card >= NUM_CARDS) {
-		cardDisplay (&eraseCard, x, y);
-	} else {
-		cardDisplay (&cards[card], x, y);
-	}
-}
+static struct displayed	*onscreen;
 
 struct displayed {
 	struct displayed	*next;
@@ -256,10 +256,9 @@ struct displayed {
 	int			flag;
 };
 
-static struct displayed	*onscreen;
-
-cardDisplay (c, x, y)
+void cardDisplay (c, x, y)
 struct card	*c;
+int x, y;
 {
 	struct displayed	*d, *p;
 	// char			*malloc ();
@@ -291,26 +290,20 @@ gotim:	;
 	drawIm (c, x, y);
 }
 
-drawIm (c, x, y)
-struct card	*c;
-int		x, y;
+void displayCard (card, x, y)
+int	card;
+int	x, y;
 {
-	XSetFunction(dpy, cheap_gc, GXcopy);
-	XCopyArea(dpy, c->bits, xwindow, cheap_gc, 0, 0, WIDTH, HEIGHT,
-		  x, y);
+	if (card < 0 || card >= NUM_CARDS) {
+		cardDisplay (&eraseCard, x, y);
+	} else {
+		cardDisplay (&cards[card], x, y);
+	}
 }
 
-cardRedisplay (x, y, w, h)
-{
-	struct displayed	*d;
-
-	for (d = onscreen; d; d = d->next)
-		d->flag = 0;
-	redisplaybelow (onscreen, x, y, w, h);
-}
-
-redisplaybelow (d, x, y, w, h)
-struct displayed	*d;
+void redisplaybelow (d, x, y, w, h)
+struct displayed *d;
+int x, y, w, h;
 {
 	int			x2, y2;
 
@@ -330,7 +323,16 @@ struct displayed	*d;
 
 }
 
-cardEraseAll ()
+void cardRedisplay (int x, int y, int w, int h)
+{
+	struct displayed	*d;
+
+	for (d = onscreen; d; d = d->next)
+		d->flag = 0;
+	redisplaybelow (onscreen, x, y, w, h);
+}
+
+void cardEraseAll ()
 {
 	struct displayed	*d, *n;
 
