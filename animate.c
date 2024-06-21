@@ -9,23 +9,26 @@
 
 extern int	iscolor;
 
-animate_move (player, orig_type, orig_arg, dest_type, dest_arg)
-{
-#if 1
-	int	ox, oy, dx, dy;
-
-	compute_position (player, orig_type, orig_arg, &ox, &oy);
-	compute_position (player, dest_type, dest_arg, &dx, &dy);
-	do_animate (ox, oy, dx, dy);
-#endif
-}
-
 # define abs(x)	((x) < 0 ? -(x) : (x))
 
 # define SPEED_FACTOR	(2.5)
 # define accerate(v,r)	((v) + (0.1 * (r)))
 
-do_animate (ox, oy, dx, dy)
+static
+void draw_square (int x1, int y1, int x2, int y2)
+{
+	XSetFunction(dpy, cheap_gc, GXxor);
+	XSetFillStyle(dpy, cheap_gc, FillSolid);
+	if (iscolor)
+		XSetForeground(dpy, cheap_gc,
+			       BlackPixel(dpy, DefaultScreen(dpy)));
+	else
+		XSetForeground(dpy, cheap_gc,
+			       WhitePixel(dpy, DefaultScreen(dpy)));
+	XFillRectangle (dpy, xwindow, cheap_gc, x1, y1, x2-x1, y2-y1);
+}
+
+void do_animate (int ox, int oy, int dx, int dy)
 {
 	double	x, y;
 	double	xc, yc;
@@ -140,22 +143,8 @@ do_animate (ox, oy, dx, dy)
 }
 
 static
-draw_square (x1, y1, x2, y2)
-{
-	XSetFunction(dpy, cheap_gc, GXxor);
-	XSetFillStyle(dpy, cheap_gc, FillSolid);
-	if (iscolor)
-		XSetForeground(dpy, cheap_gc,
-			       BlackPixel(dpy, DefaultScreen(dpy)));
-	else
-		XSetForeground(dpy, cheap_gc,
-			       WhitePixel(dpy, DefaultScreen(dpy)));
-	XFillRectangle (dpy, xwindow, cheap_gc, x1, y1, x2-x1, y2-y1);
-}
-
-static
-compute_position (player, type, arg, xp, yp)
-int	*xp, *yp;
+void compute_position (player, type, arg, xp, yp)
+int	player, type, arg, *xp, *yp;
 {
 	switch (type) {
 	case ANIMATE_HAND:
@@ -251,4 +240,15 @@ int	*xp, *yp;
 		}
 		break;
 	}
+}
+
+void animate_move (int player, int orig_type, int orig_arg, int dest_type, int dest_arg)
+{
+#if 1
+	int	ox, oy, dx, dy;
+
+	compute_position (player, orig_type, orig_arg, &ox, &oy);
+	compute_position (player, dest_type, dest_arg, &dx, &dy);
+	do_animate (ox, oy, dx, dy);
+#endif
 }
