@@ -44,12 +44,12 @@ way.
 
 
 ++++++++++++++++++++++++++++
-I've updated xmille to build on my laptop, and it seems to work as well as
-I remember it working in the past on my dad'd FreeBSD machine. Overall I
-haven't done much aside from adding header files and defining variable types.
-There were a couple changes I had to make to work around features being
-deprecated over the decades and getting the compiler to not complain about
-mismatched types, but it hasn't seemed to break anything so far.
+I've updated xmille to build on my Arch Linux system, and it seems to work
+as well as I remember it working in the past on my dad'd FreeBSD machine.
+Overall I haven't done much aside from adding header files and defining
+variable types. There were a couple changes I had to make to work around
+features being deprecated over the decades and getting the compiler to not
+complain aboutmismatched types, but it hasn't seemed to break anything so far.
 
 -Jeffrey 6/21/2024
 jdcairtrain@gmail.com
